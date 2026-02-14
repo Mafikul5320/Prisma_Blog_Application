@@ -1,0 +1,61 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Post {
+  post_id    String    @id @default(uuid())
+  title      String    @db.VarChar(200)
+  content    String    @db.Text
+  thumbnail  String?
+  isFeatured Boolean   @default(false)
+  status     Status    @default(PUBLISHED)
+  tag        String[]
+  views      Int       @default(0)
+  authorId   String
+  createAt   DateTime  @default(now())
+  updateAt   DateTime  @updatedAt
+  posts      Comment[]
+
+  @@index([authorId])
+  @@map("posts")
+}
+
+model Comment {
+  comment_id String        @id @default(uuid())
+  content    String        @db.Text
+  author_id  String
+  post_id    String
+  postId     Post          @relation(fields: [post_id], references: [post_id])
+  parent_id  String
+  parentId   Comment       @relation("commentReply", fields: [parent_id], references: [comment_id])
+  Replies     Comment[]     @relation("commentReply")
+  status     CommentStatus @default(APPROVE)
+  createAt   DateTime      @default(now())
+  updateAt   DateTime      @updatedAt
+
+  @@index([author_id])
+  @@index([post_id])
+  @@map("comments")
+}
+
+enum CommentStatus {
+  REJECT
+  APPROVE
+}
+
+enum Status {
+  DRAFT
+  PUBLISHED
+  APPROVE
+}
