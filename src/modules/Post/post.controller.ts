@@ -2,7 +2,7 @@ import { Request, Response } from "express";
 import { PostService } from "./post.service";
 
 const CreatePost = async (req: Request, res: Response) => {
-    const result = await PostService.CreatePost(req.body);
+    const result = await PostService.CreatePost(req.body, req.user?.id as string);
     console.log(req.body)
     try {
         res.status(201).json({

@@ -23,6 +23,7 @@ model Post {
   tag        String[]
   views      Int       @default(0)
   authorId   String
+  author     User      @relation(fields: [authorId], references: [id])
   createAt   DateTime  @default(now())
   updateAt   DateTime  @updatedAt
   posts      Comment[]
@@ -70,6 +71,7 @@ model User {
   updatedAt     DateTime  @updatedAt
   sessions      Session[]
   accounts      Account[]
+  posts         Post[]
 
   role   String? @default("USER")
   phone  String?
