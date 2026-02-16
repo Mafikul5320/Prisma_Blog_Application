@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 })
 
 app.all("/api/auth/*splat", toNodeHandler(auth));
-app.use("/post", PostRouter)
+app.use("/post", PostRouter);
+app.use("/posts",PostRouter)
 
 export default app;
