@@ -15,13 +15,13 @@ const CreatePost = async (req: Request, res: Response) => {
 };
 
 const AllPost = async (req: Request, res: Response) => {
-    const { search } = req.query;
+    const { search, authorId } = req.query;
     const searchString = typeof search === 'string' ? search : undefined
 
     const tags = req.query.tag ? (req.query.tag as string).split(",") : [];
-
-
-    const result = await PostService.AllPost(searchString as string, tags);
+    const isFeatured = req.query.isFeatured !== undefined ? req.query.isFeatured === "true" : undefined;
+    console.log(isFeatured);
+    const result = await PostService.AllPost(searchString as string, tags, isFeatured as boolean, authorId as string);
     try {
         res.status(201).json({
             message: "All Post Get Sucessfull",

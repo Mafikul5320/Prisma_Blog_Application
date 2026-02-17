@@ -10,45 +10,36 @@ const CreatePost = async (data: Omit<Post, "id" | "updateAt" | "createAt" | "aut
     return result;
 };
 
-const AllPost = async (payload: string, tags: string[] | []) => {
-    const andCondition: Prisma.PostWhereInput[] = [];
-    console.log(tags)
+const AllPost = async (payload: string | undefined, tags: string[], isFeatured: any, authorId: string) => {
 
-    // If no search payload, return all posts
-    // if (!payload) {
-    //     return await prisma.post.findMany();
-    // }
+    const andCondition: Prisma.PostWhereInput[] = [];
+
     if (payload) {
         andCondition.push({
             OR: [
-                {
-                    title: {
-                        contains: payload,
-                        mode: 'insensitive'
-                    },
-                },
-                {
-                    tag: {
-                        has: payload
-                    }
-                }
+                { title: { contains: payload, mode: 'insensitive' } },
+                { tag: { has: payload } }
             ],
-        })
-    }
-    if (tags.length > 0) {
-        andCondition.push({
-            tag: {
-                hasSome: tags
-            }
         });
     }
 
+    if (tags.length > 0) {
+        andCondition.push({ tag: { hasSome: tags } });
+    }
+
+    if (isFeatured !== undefined) {
+        andCondition.push({ isFeatured: isFeatured === true });
+    }
+
+
+    if (authorId) {
+        andCondition.push({ authorId });
+    }
 
     const result = await prisma.post.findMany({
-        where: {
-            OR: andCondition
-        }
+        where: andCondition.length > 0 ? { AND: andCondition } : {}
     });
+
     return result;
 }
 
