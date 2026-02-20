@@ -6,9 +6,8 @@ async function seedAdmin() {
 
     const AdminData = {
         name: "Admin",
-        email: "admin@gmail.com",
+        email: "admin4@gmail.com",
         password: "Admin1234",
-        role: "ADMIN"
     };
     try {
         const checkAdmin = await prisma.user.findUnique({
@@ -35,7 +34,8 @@ async function seedAdmin() {
                     email: AdminData.email
                 },
                 data: {
-                    emailVerified: true
+                    emailVerified: true,
+                    role: "ADMIN"
                 }
             })
             console.log("Successfull")
