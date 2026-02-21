@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { PostService } from "./post.service";
+import Pagination from "../../helpers/Pagination";
 
 const CreatePost = async (req: Request, res: Response) => {
     const result = await PostService.CreatePost(req.body, req.user?.id as string);
@@ -17,11 +18,7 @@ const CreatePost = async (req: Request, res: Response) => {
 const AllPost = async (req: Request, res: Response) => {
     const { search, authorId } = req.query;
     const searchString = typeof search === 'string' ? search : undefined
-    const page = Number(req.query.page) || 1;
-    const limit = Number(req.query.limit) || 100;
-    const skip = (page - 1) * limit;
-    const orderBy = req.query.orderBy;
-    const sortBy = req.query.sortBy
+    const { limit, skip, orderBy, sortBy } = Pagination(req.query)
     const tags = req.query.tag ? (req.query.tag as string).split(",") : [];
     const isFeatured = req.query.isFeatured !== undefined ? req.query.isFeatured === "true" : undefined;
     console.log(isFeatured);
