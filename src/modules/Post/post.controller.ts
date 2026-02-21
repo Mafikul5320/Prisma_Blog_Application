@@ -18,11 +18,11 @@ const CreatePost = async (req: Request, res: Response) => {
 const AllPost = async (req: Request, res: Response) => {
     const { search, authorId } = req.query;
     const searchString = typeof search === 'string' ? search : undefined
-    const { limit, skip, orderBy, sortBy } = Pagination(req.query)
+    const { limit, skip, orderBy, sortBy, page } = Pagination(req.query)
     const tags = req.query.tag ? (req.query.tag as string).split(",") : [];
     const isFeatured = req.query.isFeatured !== undefined ? req.query.isFeatured === "true" : undefined;
     console.log(isFeatured);
-    const result = await PostService.AllPost(searchString as string, tags, isFeatured as boolean, authorId as string, limit, skip, orderBy as string, sortBy as string);
+    const result = await PostService.AllPost(searchString as string, tags, isFeatured as boolean, authorId as string, limit, skip, orderBy as string, sortBy as string, page as number);
     try {
         res.status(201).json({
             message: "All Post Get Sucessfull",
@@ -33,7 +33,25 @@ const AllPost = async (req: Request, res: Response) => {
     }
 };
 
+const OnePost = async (req: Request, res: Response) => {
+    const { id } = req.params;
+    if (!id) {
+        throw new Error("Need Post Id");
+    }
+    const result = await PostService.OnePost(id as string);
+
+    try {
+        res.status(201).json({
+            message: "Post Get Sucessfull",
+            data: result
+        })
+    } catch (error) {
+        console.log(error)
+    }
+}
+
 export const PostController = {
     CreatePost,
-    AllPost
+    AllPost,
+    OnePost
 }

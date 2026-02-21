@@ -1,3 +1,4 @@
+import { date } from "better-auth";
 import { Post, Prisma } from "../../../generated/prisma/client"
 import { prisma } from "../../lib/prisma"
 
@@ -10,7 +11,7 @@ const CreatePost = async (data: Omit<Post, "id" | "updateAt" | "createAt" | "aut
     return result;
 };
 
-const AllPost = async (payload: string | undefined, tags: string[], isFeatured: any, authorId: string, limit: number, skip: number, OrderBy: string, sortBy: string) => {
+const AllPost = async (payload: string | undefined, tags: string[], isFeatured: any, authorId: string, limit: number, skip: number, OrderBy: string, sortBy: string, page: number) => {
 
     const andCondition: Prisma.PostWhereInput[] = [];
 
@@ -40,15 +41,55 @@ const AllPost = async (payload: string | undefined, tags: string[], isFeatured: 
         where: andCondition.length > 0 ? { AND: andCondition } : {},
         take: limit,
         skip,
-        orderBy: OrderBy && sortBy ? {
+        orderBy: {
             [sortBy]: OrderBy
-        } : { createAt: "desc" }
+        }
     });
+    const total = await prisma.post.count({
+        where: {
+            AND: andCondition
+        }
+    })
 
-    return result;
+    return {
+        result,
+        pagination: {
+            total,
+            limit,
+            page,
+            totalPage: Math.ceil(total / limit)
+
+        }
+    };
+};
+
+const OnePost = async (id: string) => {
+
+    return await prisma.$transaction(async (tx) => {
+
+        await tx.post.update({
+            where: {
+                post_id: id
+            },
+            data: {
+                views: {
+                    increment: 1
+                }
+            }
+        })
+
+        const result = await tx.post.findUnique({
+            where: {
+                post_id: id
+            }
+        });
+        return result
+    })
+
 }
 
 export const PostService = {
     CreatePost,
-    AllPost
+    AllPost,
+    OnePost
 }
