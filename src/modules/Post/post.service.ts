@@ -1,4 +1,3 @@
-import { date } from "better-auth";
 import { Post, Prisma } from "../../../generated/prisma/client"
 import { prisma } from "../../lib/prisma"
 
