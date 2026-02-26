@@ -42,6 +42,13 @@ const AllPost = async (payload: string | undefined, tags: string[], isFeatured: 
         skip,
         orderBy: {
             [sortBy]: OrderBy
+        },
+        include: {
+            _count: {
+                select: {
+                    posts: true
+                }
+            }
         }
     });
     const total = await prisma.post.count({
@@ -70,6 +77,7 @@ const OnePost = async (id: string) => {
             where: {
                 post_id: id
             },
+
             data: {
                 views: {
                     increment: 1
@@ -79,7 +87,33 @@ const OnePost = async (id: string) => {
 
         const result = await tx.post.findUnique({
             where: {
-                post_id: id
+                post_id: id,
+            },
+
+            include: {
+                posts: {
+                    orderBy: {
+                        createAt: "desc"
+                    },
+                    where: {
+                        parent_id: null,
+                    },
+                    include: {
+                        Replies: {
+                            orderBy: {
+                                createAt: "desc"
+                            },
+                            include: {
+                                Replies: {
+                                    orderBy: {
+                                        createAt: "desc"
+                                    }
+                                }
+                            }
+                        }
+
+                    },
+                }
             }
         });
         return result
