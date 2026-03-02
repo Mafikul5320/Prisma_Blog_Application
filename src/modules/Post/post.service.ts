@@ -119,10 +119,20 @@ const OnePost = async (id: string) => {
         return result
     })
 
-}
+};
+
+const DeletePost = async (data: Omit<Post, "id" | "updateAt" | "createAt" | "authorId">, userId: string) => {
+    const result = await prisma.post.create({
+        data: {
+            ...data, authorId: userId
+        }
+    })
+    return result;
+};
 
 export const PostService = {
     CreatePost,
     AllPost,
-    OnePost
+    OnePost,
+    DeletePost
 }
