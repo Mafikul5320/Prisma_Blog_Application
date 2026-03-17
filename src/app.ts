@@ -4,6 +4,8 @@ import { toNodeHandler } from "better-auth/node";
 import { auth } from './lib/auth';
 import cors from 'cors'
 import { CommentRouter } from './modules/comments/commnt.route';
+import ErrorHandler from './middleware/ErrorHendler';
+import NotFound from './middleware/NotFoundRouter';
 
 const app: Application = express()
 app.use(express.json())
@@ -20,6 +22,9 @@ app.get('/', (req, res) => {
 app.all("/api/auth/*splat", toNodeHandler(auth));
 app.use("/post", PostRouter);
 app.use("/posts", PostRouter);
-app.use("/comments", CommentRouter)
+app.use("/comments", CommentRouter);
+app.use("/stats", PostRouter);
+app.use(NotFound)
+app.use(ErrorHandler);
 
 export default app;

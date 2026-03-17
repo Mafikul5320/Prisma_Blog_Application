@@ -119,10 +119,22 @@ const OnePost = async (id: string) => {
         return result
     })
 
+};
+
+const GetAllStats = async () => {
+
+    const allComment = await prisma.post.count();
+    console.log(allComment,"jkjh")
+
+    return {
+        allComment
+    }
+
 }
 
 export const PostService = {
     CreatePost,
     AllPost,
-    OnePost
+    OnePost,
+    GetAllStats
 }

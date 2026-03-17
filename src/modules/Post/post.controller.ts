@@ -1,4 +1,4 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { PostService } from "./post.service";
 import Pagination from "../../helpers/Pagination";
 
@@ -33,7 +33,7 @@ const AllPost = async (req: Request, res: Response) => {
     }
 };
 
-const OnePost = async (req: Request, res: Response) => {
+const OnePost = async (req: Request, res: Response, next: NextFunction) => {
     const { id } = req.params;
     if (!id) {
         throw new Error("Need Post Id");
@@ -46,6 +46,20 @@ const OnePost = async (req: Request, res: Response) => {
             data: result
         })
     } catch (error) {
+        next(error);
+    }
+};
+
+const GetAllStats = async (req: Request, res: Response) => {
+
+    const result = await PostService.GetAllStats();
+
+    try {
+        res.status(201).json({
+            message: "Stats Get Sucessfull",
+            data: result
+        })
+    } catch (error) {
         console.log(error)
     }
 }
@@ -53,5 +67,6 @@ const OnePost = async (req: Request, res: Response) => {
 export const PostController = {
     CreatePost,
     AllPost,
-    OnePost
+    OnePost,
+    GetAllStats
 }
